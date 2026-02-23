@@ -1,4 +1,4 @@
 import { runServer } from "./server.js";
-const PORT = 3000;
+import Config from "./config/index.js";
 
-runServer(PORT);
+runServer(Config.PORT);
