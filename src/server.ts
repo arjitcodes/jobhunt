@@ -1,5 +1,6 @@
 import type { Server } from "http";
 import type { NextFunction } from "express";
+import cors from "cors";
 import {
   gracefullyShutdown,
   resolvedControllers,
@@ -24,17 +25,27 @@ let db: Mongoose | null = null;
 
 export const runServer = async (PORT: number) => {
   try {
-    process.on("SIGINT", async() => {
+    process.on("SIGINT", async () => {
       console.log(`\n[•] Received SIGINT, shutting down server...`);
       await gracefullyShutdown(server, db);
     });
 
-    process.on("SIGTERM", async() => {
+    process.on("SIGTERM", async () => {
       console.log(`\n[•] Received SIGTERM, shutting down server...`);
       await gracefullyShutdown(server, db);
     });
 
     const app = express();
+
+    app.use(
+      cors({
+        origin: [
+          "http://localhost:3000",
+          "https://vercel-link.vercel.app",
+        ],
+        credentials: true, // Crucial since you are using Cookies for JWT
+      }),
+    );
 
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
