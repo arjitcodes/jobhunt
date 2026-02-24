@@ -15,6 +15,8 @@ const envs = {
   PORT: parseInt(getEnv("PORT") || "8000", 10),
   SERVER_URI: getEnv("SERVER_URI", false),
 
+  CLIENT_URL: getEnv("CLIENT_URL"),
+
   // Database
   MONGODB_URI: getEnv("MONGODB_URI"),
 
