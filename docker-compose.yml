@@ -5,13 +5,11 @@ services:
     build: .
     container_name: jobhunt_backend
     restart: unless-stopped
-    # Expose opens port 5000 ONLY to other containers (like Nginx), not the internet
     expose:
       - "5000"
     env_file:
       - .env.production 
     volumes:
-      # Keep your uploads mapping
       - ./public/uploads:/app/public/uploads
 
   nginx:
@@ -19,11 +17,19 @@ services:
     container_name: jobhunt_nginx
     restart: unless-stopped
     ports:
-      - "80:80" # Opens standard HTTP port to the internet
+      - "80:80"
+      - "443:443"
     depends_on:
       - backend
     volumes:
-      # 1. Mounts our custom Nginx config file
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      # 2. Mounts the exact same uploads folder so Nginx can read the images directly!
       - ./public/uploads:/app/public/uploads:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    container_name: jobhunt_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
