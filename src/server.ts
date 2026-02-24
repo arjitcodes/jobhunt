@@ -40,8 +40,11 @@ export const runServer = async (PORT: number) => {
 
     app.use(
       cors({
-        origin: [Config.CLIENT_URL],
-        credentials: true, // Crucial since you are using Cookies for JWT
+        origin: Config.CLIENT_URL ? Config.CLIENT_URL.trim() : '*', 
+        
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        
+        credentials: true, 
       }),
     );
 
