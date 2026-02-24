@@ -38,13 +38,23 @@ export const runServer = async (PORT: number) => {
 
     const app = express();
 
+    const allowedOrigins = [
+      "https://jobhunt-client-bice.vercel.app",
+      "https://www.jobhunt-client-bice.vercel.app",
+      "http://localhost:3000",
+    ];
+
     app.use(
       cors({
-        origin: Config.CLIENT_URL ? Config.CLIENT_URL.trim() : '*', 
-        
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-        
-        credentials: true, 
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin.trim())) {
+            callback(null, true);
+          } else {
+            callback(new Error(`CORS blocked: ${origin}`));
+          }
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        credentials: true,
       }),
     );
 
