@@ -19,7 +19,7 @@ import type { Mongoose } from "mongoose";
 import { container } from "./di/container.js";
 
 import { type Database } from "./config/db/index.js";
-import Config from "./config/index.js";
+// import Config from "./config/index.js";
 
 let server: Server | null = null;
 let db: Mongoose | null = null;
