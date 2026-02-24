@@ -4,6 +4,8 @@ import httpResponse from "../utils/httpResponse.js";
 import { httpError } from "../utils/httpError.js";
 import { type CustomRequest } from "../interface/express.js";
 import type { IJob } from "../interface/job.js";
+import fs from 'fs/promises';
+import path from 'path';
 
 export class JobController {
   private JobService: JobService;
@@ -108,42 +110,46 @@ export class JobController {
 
       const result = await this.JobService.findAll(filter, page, limit);
 
+      
+
       return httpResponse(req, res, 200, "Jobs retrieved successfully", result);
     } catch (error) {
       return httpError(next, error, req, 500);
     }
   };
 
-
-/**
+  /**
    * Get a single job by ID (Used for the "View" or "Edit" actions)
    */
   handleGetJobById = async (
-    req: express.Request, 
-    res: express.Response, 
-    next: NextFunction
+    req: express.Request,
+    res: express.Response,
+    next: NextFunction,
   ): Promise<void> => {
     try {
-      const rawId = req.params.id || req.query.id
-      const id = Array.isArray(rawId) ? rawId[0] : rawId
+      const rawId = req.params.id || req.query.id;
+      const id = Array.isArray(rawId) ? rawId[0] : rawId;
 
-      if (!id || typeof id !== 'string') {
-        return httpError(next, new Error('A valid Slider ID is required'), req, 400)
+      if (!id || typeof id !== "string") {
+        return httpError(
+          next,
+          new Error("A valid Slider ID is required"),
+          req,
+          400,
+        );
       }
 
-
-      const job = await this.JobService.findById(id)
+      const job = await this.JobService.findById(id);
 
       if (!job) {
-        return httpError(next, new Error('Job not found'), req, 404)
+        return httpError(next, new Error("Job not found"), req, 404);
       }
 
-      return httpResponse(req, res, 200, 'Job retrieved successfully', { job })
+      return httpResponse(req, res, 200, "Job retrieved successfully", { job });
     } catch (error) {
-      return httpError(next, error, req, 500)
+      return httpError(next, error, req, 500);
     }
-  }
-
+  };
 
   /**
    * Update a job (Also used for the isActive toggle switch)
@@ -211,11 +217,26 @@ export class JobController {
         );
       }
 
-
       const job = await this.JobService.deleteById(id);
 
       if (!job) {
         return httpError(next, new Error("Job not found"), req, 404);
+      }
+
+      const imagePath = job.image;
+
+      if (imagePath) {
+        try {
+          const fullPath = path.join(process.cwd(), imagePath);
+
+          await fs.unlink(fullPath);
+          console.log(`Successfully deleted orphaned file: ${fullPath}`);
+        } catch (fileError: any) {
+          console.error(
+            `Failed to delete file off disk: ${imagePath}`,
+            fileError.message,
+          );
+        }
       }
 
       return httpResponse(req, res, 200, "Job deleted successfully", { job });

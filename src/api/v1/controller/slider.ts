@@ -4,6 +4,8 @@ import httpResponse from '../utils/httpResponse.js'
 import { httpError } from '../utils/httpError.js'
 import { type CustomRequest } from '../interface/express.js'
 import type { ISlider } from '../interface/slider.js'
+import fs from 'fs/promises';
+import path from 'path';
 
 export class SliderController {
   private SliderService: SliderService
@@ -153,6 +155,19 @@ export class SliderController {
 
       if (!slider) {
         return httpError(next, new Error('Slider not found'), req, 404)
+      }
+
+      const imagePath = slider.imageUrl; 
+      
+      if (imagePath) {
+        try {
+          const fullPath = path.join(process.cwd(), imagePath);
+          
+          await fs.unlink(fullPath);
+          console.log(`Successfully deleted orphaned file: ${fullPath}`);
+        } catch (fileError: any) {
+          console.error(`Failed to delete file off disk: ${imagePath}`, fileError.message);
+        }
       }
 
       return httpResponse(req, res, 200, 'Slider deleted successfully', { slider })

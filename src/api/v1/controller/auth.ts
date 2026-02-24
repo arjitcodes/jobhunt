@@ -1,13 +1,10 @@
 import express, {type NextFunction } from 'express'
 import { verifyHashedPassword } from './../utils/password.js'
-import { isValidEmail} from './../utils/validator.js'
 import { createTokens } from './../utils/token.js'
 
 import { UserService } from '../service/user.js'
 import { httpError } from '../utils/httpError.js'
 import httpResponse from '../utils/httpResponse.js'
-import { type Payload } from '../interface/token.js'
-import jwt from 'jsonwebtoken'
 import type { CustomRequest } from '../interface/express.js'
 
 export class AuthController {
