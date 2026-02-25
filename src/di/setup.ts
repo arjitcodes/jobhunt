@@ -11,7 +11,7 @@ import {AuthController,JobController,RefreshTokenController,SliderController,Use
 
 
 export const setupDependencies = () => {
-  const isTestEnvironment = process.env.NODE_ENV === "test";
+  const isTestEnvironment = Config.ENV === "test";
   if (!isTestEnvironment) {
     container.register(
       "Database",

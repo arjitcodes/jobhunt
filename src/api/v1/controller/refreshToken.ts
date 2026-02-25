@@ -7,7 +7,7 @@ import { type NextFunction } from 'express'
 import httpResponse from '../utils/httpResponse.js'
 import { type Payload } from '../interface/token.js'
 import { type CustomRequest } from '../interface/express.js'
-
+import Config from '../../../config/index.js'
 
 export class RefreshTokenController {
   private UserService: UserService
@@ -27,7 +27,7 @@ export class RefreshTokenController {
       res.clearCookie('jwt')
 
       if (!user) {
-        const decoded = jwt.verify(refreshToken, `${process.env.ACCESS_TOKEN_SECRET}`) as Payload
+        const decoded = jwt.verify(refreshToken, `${Config.REFRESH_TOKEN_SECRET}`) as Payload
 
         const hackedUser = await this.UserService.findOne({
           email: decoded.user.email
@@ -43,7 +43,7 @@ export class RefreshTokenController {
 
       const newRefreshTokenArray = user.refreshToken ? user.refreshToken.filter((rt) => rt !== refreshToken) : []
 
-      const decoded = jwt.verify(refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`) as Payload
+      const decoded = jwt.verify(refreshToken, `${Config.REFRESH_TOKEN_SECRET}`) as Payload
 
       if (decoded.user.email !== user.email) return httpError(next, new Error('forbiden'), req, 403)
 
