@@ -71,9 +71,11 @@ export class UserController {
 
       if (cookies?.jwt) res.clearCookie('jwt')
 
-      res.cookie('jwt', refreshToken, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
+      res.cookie('jwt', refreshToken, { 
+        httpOnly: true, 
+        secure: true, 
+        sameSite: 'none', 
+        maxAge: 30 * 24 * 60 * 60 * 1000
       })
 
       return httpResponse(req, res, 201, 'User created successfully', { accessToken })

@@ -60,7 +60,12 @@ export class RefreshTokenController {
 
       await user.save()
 
-      res.cookie('jwt', refreshToken, { httpOnly: true })
+      res.cookie('jwt', newRefreshToken, { 
+        httpOnly: true, 
+        secure: true, 
+        sameSite: 'none', 
+        maxAge: 30 * 24 * 60 * 60 * 1000
+      })
       return httpResponse(req, res, 201, 'User Login Successful', { accessToken })
     } catch (error) {
       return httpError(next, error, req, 500)
